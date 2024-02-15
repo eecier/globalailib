@@ -1,0 +1,83 @@
+class Library:
+    def __init__(self, file_path="books.txt"):
+        self.file_path = file_path
+        try:
+            self.file = open(self.file_path, "a+")
+            print(f"Opened file: {self.file_path}")
+        except Exception as e:
+            print(f"An error occurred while opening the file: {e}")
+
+    def __del__(self):
+        try:
+            if hasattr(self, 'file') and self.file is not None and not self.file.closed:
+                self.file.close()
+                print(f"Closed file: {self.file_path}")
+        except Exception as e:
+            print(f"An error occurred while closing the file: {e}")
+
+    def list_books(self):
+        self.file.seek(0)
+        books = self.file.readlines()
+        
+        if not books:
+            print("Kütüphaneye eklenen kitap bulunmamaktadır")
+        else:
+            for book in books:
+        
+                if ',' in book:
+                    title, author, year, pages = book.strip().split(',', 3)
+                    print(f"Title: {title}, Author: {author}, Year: {year}, Pages: {pages}")
+                else:
+                    print(f"Invalid format in the file: {book}")
+
+    def add_book(self):
+        title = input("Kitabın adını giriniz: ")
+        author = input("Kitabın yazarını giriniz: ")
+        year = input("Kitabın yazılış tarihini giriniz: ")
+        pages = input("Sayfa sayısını giriniz: ")
+        new_book = f"{title},{author},{year},{pages}\n"
+        self.file.write(new_book)
+        print(f"Added book: {title}")
+
+    def remove_book(self):
+        title_to_remove = input("Silinecek kitabın adını yazınız ")
+        self.file.seek(0)
+        books = self.file.readlines()
+
+        
+        updated_books = [book for book in books if title_to_remove not in book]
+
+       
+        self.file.seek(0)
+        self.file.truncate()
+
+        
+        self.file.writelines(updated_books)
+
+        print(f"Removed book: {title_to_remove}")
+
+lib = Library()
+
+
+while True:
+    print("\n*** MENU ***")
+    print("1) Kitapları Listele")
+    print("2) Kitap Ekle")
+    print("3) Kitap Sil")
+    print("4) ÇIKIŞ")
+
+    choice = input("Enter your choice (1-4): ")
+
+    if choice == '1':
+        lib.list_books()
+    elif choice == '2':
+        lib.add_book()
+    elif choice == '3':
+        lib.remove_book()
+    elif choice == '4':
+        break
+    else:
+        print("Invalid choice. Please enter a number between 1 and 4.")
+
+
+del lib
